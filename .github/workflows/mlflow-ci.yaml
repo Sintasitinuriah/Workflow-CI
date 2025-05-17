@@ -10,45 +10,39 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
+    - name: 📥 Checkout repository
       uses: actions/checkout@v3
 
-    - name: Set up Miniconda
+    - name: 🐍 Set up Miniconda
       uses: conda-incubator/setup-miniconda@v2
       with:
         activate-environment: bigmart-env
         environment-file: MLProject/conda.yaml
         auto-activate-base: false
 
-    - name: Install dependencies
+    - name: 📦 Install dependencies
       run: |
         pip install mlflow dagshub joblib
 
-    - name: Export MLflow Environment Variables
+    - name: 🔐 Export MLflow Environment Variables
       run: |
         echo "MLFLOW_TRACKING_URI=${{ secrets.MLFLOW_TRACKING_URI }}" >> $GITHUB_ENV
         echo "MLFLOW_TRACKING_USERNAME=${{ secrets.MLFLOW_TRACKING_USERNAME }}" >> $GITHUB_ENV
         echo "MLFLOW_TRACKING_PASSWORD=${{ secrets.MLFLOW_TRACKING_TOKEN }}" >> $GITHUB_ENV
 
-    - name: Run MLflow Project
+    - name: 🏃 Run MLflow Project
       run: |
         cd MLProject
         mlflow run . -P data_path=cleaned_data.csv --env-manager=local
 
-    - name: Commit and push model file to GitHub using Git LFS
-      run: |
-        git config --global user.email "sintasitinuriah23@gmail.com"
-        git config --global user.name "Sintasitinuriah"
-        git lfs install
-        git lfs track "mlruns/**"
-        git commit -m "Track large files in mlruns with Git LFS" || true
-        git push origin main
+    - name: 🧠 Upload trained model as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: trained-model
+        path: MLProject/outputs/linear_model.pkl  # Sesuaikan jika berbeda
 
-    # Save models to GitHub Repository
-    - name: Save mlruns to repo
-      run: |
-        git config --global user.email "sintasitinuriah23@gmail.com"
-        git config --global user.name "Sintasitinuriah"
-        git add -f mlruns/
-        git commit -m "Save mlruns from CI run" || true
-        git push origin main
+    - name: 📁 Upload MLflow logs as artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: mlflow-logs
+        path: MLProject/mlruns/
