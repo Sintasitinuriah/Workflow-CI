@@ -21,5 +21,5 @@ ENV PATH="/opt/conda/bin:$PATH"
 RUN conda env create -f conda.yaml
 
 # Aktifkan conda environment & set entrypoint
-SHELL ["conda", "run", "-n", "big-mart-env", "/bin/bash", "-c"]
-ENTRYPOINT ["conda", "run", "-n", "big-mart-env", "mlflow", "run", ".", "-P", "data_path=cleaned_data.csv"]
+SHELL ["conda", "run", "-n", "bigmart-env", "/bin/bash", "-c"]
+ENTRYPOINT ["conda", "run", "-n", "bigmart-env", "mlflow", "run", ".", "-P", "data_path=cleaned_data.csv"]
