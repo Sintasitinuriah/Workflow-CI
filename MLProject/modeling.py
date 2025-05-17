@@ -16,17 +16,17 @@ from sklearn.metrics import (
     max_error
 )
 
-# Jika kamu punya preprocessing custom, import dengan benar
+# Tambahkan path untuk modul preprocessing
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from preprocessing.automate_Sinta import SklearnPreprocessor
 
-# Set MLflow Tracking URI ke lokal (folder mlruns di direktori kerja)
+# Set MLflow tracking URI ke lokal (folder mlruns di direktori kerja)
 mlflow.set_tracking_uri("file://" + os.path.abspath("mlruns"))
 
-# Set experiment name
+# Set experiment name (akan dibuat jika belum ada)
 mlflow.set_experiment("Big Mart Sales Prediction")
 
-# Load dataset (pastikan path sesuai dengan file di folder MLProject)
+# Load dataset
 data = pd.read_csv("cleaned_data.csv")
 
 X = data.drop(['Item_Outlet_Sales', 'Item_Identifier'], axis=1)
@@ -34,7 +34,7 @@ y = np.log(data['Item_Outlet_Sales'])
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42, test_size=0.2)
 
-# Buat preprocessor dan pipeline
+# Buat pipeline
 preprocessor = SklearnPreprocessor(
     num_columns=['Item_Weight', 'Item_Visibility', 'Item_MRP', 'Outlet_Establishment_Year'],
     ordinal_columns=['Item_Fat_Content', 'Outlet_Size'],
@@ -47,13 +47,8 @@ pipeline = Pipeline([
     ("regressor", LinearRegression())
 ])
 
-# Mulai MLflow run (dengan pengecekan run aktif untuk hindari konflik nested run)
-if mlflow.active_run() is None:
-    run_ctx = mlflow.start_run(run_name="ManualLog - LinearRegression")
-else:
-    run_ctx = mlflow.start_run(run_name="ManualLog - LinearRegression", nested=True)
-
-with run_ctx:
+# Mulai MLflow run TANPA nested atau run_name (untuk menghindari konflik MLFLOW_RUN_ID)
+with mlflow.start_run():
     start = time.time()
     pipeline.fit(X_train, y_train)
     end = time.time()
@@ -69,7 +64,7 @@ with run_ctx:
     max_err = max_error(y_test, y_pred)
     training_time = end - start
 
-    # Log parameter dan metrik
+    # Logging
     mlflow.log_param("model", "LinearRegression")
     mlflow.log_param("degree_poly", 2)
 
@@ -81,9 +76,9 @@ with run_ctx:
     mlflow.log_metric("Max_Error", max_err)
     mlflow.log_metric("Training_Time", training_time)
 
-    # Log pipeline model
+    # Log model pipeline
     mlflow.sklearn.log_model(pipeline, "model")
 
-    # Print hasil training ke konsol
+    # Cetak hasil
     print(f"MAE: {mae:.4f}, MSE: {mse:.4f}, RMSE: {rmse:.4f}, R²: {r2:.4f}")
     print(f"Explained Variance: {explained_var:.4f}, Max Error: {max_err:.4f}, Training Time: {training_time:.2f}s")
