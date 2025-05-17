@@ -1,40 +1,38 @@
-import sys
-import os
-import time
-import mlflow
-import mlflow.sklearn
+import argparse
 import pandas as pd
+import mlflow
 import numpy as np
+import time
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import (
-    mean_squared_error,
-    mean_absolute_error,
-    r2_score,
-    explained_variance_score,
-    max_error
+    mean_squared_error, mean_absolute_error, r2_score,
+    explained_variance_score, max_error
 )
 
-# Tambahkan path untuk modul preprocessing
+# Custom preprocessor import
+import sys, os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from preprocessing.automate_Sinta import SklearnPreprocessor
 
-# Set MLflow tracking URI ke lokal (folder mlruns di direktori kerja)
-mlflow.set_tracking_uri("file://" + os.path.abspath("mlruns"))
+# Parse CLI args
+parser = argparse.ArgumentParser()
+parser.add_argument("--data_path", type=str, required=True)
+args = parser.parse_args()
 
-# Set experiment name (akan dibuat jika belum ada)
-mlflow.set_experiment("Big Mart Sales Prediction")
+# 🚫 JANGAN pakai mlflow.set_experiment() kalau pakai `mlflow run`
+# mlflow.set_experiment("Big Mart Sales Prediction")  <-- HAPUS
 
 # Load dataset
-data = pd.read_csv("cleaned_data.csv")
+data = pd.read_csv(args.data_path)
 
 X = data.drop(['Item_Outlet_Sales', 'Item_Identifier'], axis=1)
 y = np.log(data['Item_Outlet_Sales'])
 
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42, test_size=0.2)
 
-# Buat pipeline
+# Preprocessing pipeline
 preprocessor = SklearnPreprocessor(
     num_columns=['Item_Weight', 'Item_Visibility', 'Item_MRP', 'Outlet_Establishment_Year'],
     ordinal_columns=['Item_Fat_Content', 'Outlet_Size'],
@@ -47,7 +45,7 @@ pipeline = Pipeline([
     ("regressor", LinearRegression())
 ])
 
-# Mulai MLflow run TANPA nested atau run_name (untuk menghindari konflik MLFLOW_RUN_ID)
+# Gunakan run aktif dari MLflow CLI
 with mlflow.start_run():
     start = time.time()
     pipeline.fit(X_train, y_train)
@@ -55,7 +53,7 @@ with mlflow.start_run():
 
     y_pred = pipeline.predict(X_test)
 
-    # Hitung metrik
+    # Metrics
     mae = mean_absolute_error(y_test, y_pred)
     mse = mean_squared_error(y_test, y_pred)
     rmse = np.sqrt(mse)
@@ -64,7 +62,7 @@ with mlflow.start_run():
     max_err = max_error(y_test, y_pred)
     training_time = end - start
 
-    # Logging
+    # Log
     mlflow.log_param("model", "LinearRegression")
     mlflow.log_param("degree_poly", 2)
 
@@ -76,9 +74,7 @@ with mlflow.start_run():
     mlflow.log_metric("Max_Error", max_err)
     mlflow.log_metric("Training_Time", training_time)
 
-    # Log model pipeline
     mlflow.sklearn.log_model(pipeline, "model")
 
-    # Cetak hasil
     print(f"MAE: {mae:.4f}, MSE: {mse:.4f}, RMSE: {rmse:.4f}, R²: {r2:.4f}")
     print(f"Explained Variance: {explained_var:.4f}, Max Error: {max_err:.4f}, Training Time: {training_time:.2f}s")
