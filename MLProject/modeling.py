@@ -8,7 +8,13 @@ import numpy as np
 from sklearn.pipeline import Pipeline
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score, explained_variance_score, max_error
+from sklearn.metrics import (
+    mean_squared_error,
+    mean_absolute_error,
+    r2_score,
+    explained_variance_score,
+    max_error
+)
 
 # Jika kamu punya preprocessing custom, import dengan benar
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -41,15 +47,20 @@ pipeline = Pipeline([
     ("regressor", LinearRegression())
 ])
 
-# Training dan logging manual ke MLflow
-with mlflow.start_run(run_name="ManualLog - LinearRegression", nested=True):
+# Mulai MLflow run (dengan pengecekan run aktif untuk hindari konflik nested run)
+if mlflow.active_run() is None:
+    run_ctx = mlflow.start_run(run_name="ManualLog - LinearRegression")
+else:
+    run_ctx = mlflow.start_run(run_name="ManualLog - LinearRegression", nested=True)
+
+with run_ctx:
     start = time.time()
     pipeline.fit(X_train, y_train)
     end = time.time()
 
     y_pred = pipeline.predict(X_test)
 
-    # Hitung metric
+    # Hitung metrik
     mae = mean_absolute_error(y_test, y_pred)
     mse = mean_squared_error(y_test, y_pred)
     rmse = np.sqrt(mse)
@@ -58,7 +69,7 @@ with mlflow.start_run(run_name="ManualLog - LinearRegression", nested=True):
     max_err = max_error(y_test, y_pred)
     training_time = end - start
 
-    # Log parameters dan metrics
+    # Log parameter dan metrik
     mlflow.log_param("model", "LinearRegression")
     mlflow.log_param("degree_poly", 2)
 
@@ -70,9 +81,9 @@ with mlflow.start_run(run_name="ManualLog - LinearRegression", nested=True):
     mlflow.log_metric("Max_Error", max_err)
     mlflow.log_metric("Training_Time", training_time)
 
-    # Log model pipeline
+    # Log pipeline model
     mlflow.sklearn.log_model(pipeline, "model")
 
-    # Print hasil training
+    # Print hasil training ke konsol
     print(f"MAE: {mae:.4f}, MSE: {mse:.4f}, RMSE: {rmse:.4f}, R²: {r2:.4f}")
     print(f"Explained Variance: {explained_var:.4f}, Max Error: {max_err:.4f}, Training Time: {training_time:.2f}s")
