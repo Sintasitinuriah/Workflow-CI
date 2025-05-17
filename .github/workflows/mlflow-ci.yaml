@@ -28,7 +28,7 @@ jobs:
       run: |
         echo "MLFLOW_TRACKING_URI=${{ secrets.MLFLOW_TRACKING_URI }}" >> $GITHUB_ENV
         echo "MLFLOW_TRACKING_USERNAME=${{ secrets.MLFLOW_TRACKING_USERNAME }}" >> $GITHUB_ENV
-        echo "MLFLOW_TRACKING_PASSWORD=${{ secrets.MLFLOW_TRACKING_TOKEN }}" >> $GITHUB_ENV
+        echo "MLFLOW_TRACKING_TOKEN=${{ secrets.MLFLOW_TRACKING_TOKEN }}" >> $GITHUB_ENV
 
     - name: Run MLflow Project
       run: |
@@ -52,10 +52,7 @@ jobs:
       with:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
-        # echo "DOCKER_USERNAME=${{ secrets.DOCKER_USERNAME }}" >> $GITHUB_ENV
-        # echo "DOCKER_PASSWORD=${{ secrets.DOCKER_PASSWORD }}" >> $GITHUB_ENV
-
-
+        
     - name: Build Docker image
       run: docker build -t ${{ secrets.DOCKER_USERNAME }}/bigmart-sales:latest .
 
