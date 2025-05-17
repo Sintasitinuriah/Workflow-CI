@@ -42,7 +42,7 @@ jobs:
         path: MLProject/outputs/linear_model.pkl
 
     - name: Upload MLflow logs
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v2
       with:
         name: mlflow-logs
         path: MLProject/mlruns/
