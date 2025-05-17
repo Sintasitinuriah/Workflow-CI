@@ -39,7 +39,7 @@ jobs:
       uses: actions//upload-pages-artifact@v3
       with:
         name: trained-model
-        path: MLProject/models/linear_model.pkl
+        path: models/linear_model.pkl
 
     - name: Upload MLflow logs
       uses: actions//upload-pages-artifact@v3
