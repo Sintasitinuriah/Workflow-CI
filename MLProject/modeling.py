@@ -42,7 +42,7 @@ pipeline = Pipeline([
 ])
 
 # Training dan logging manual ke MLflow
-with mlflow.start_run(run_name="ManualLog - LinearRegression"):
+with mlflow.start_run(run_name="ManualLog - LinearRegression", nested=True):
     start = time.time()
     pipeline.fit(X_train, y_train)
     end = time.time()
