@@ -80,8 +80,8 @@ with mlflow.start_run():
     print(f"MAE: {mae:.4f}, MSE: {mse:.4f}, RMSE: {rmse:.4f}, R²: {r2:.4f}")
     print(f"Explained Variance: {explained_var:.4f}, Max Error: {max_err:.4f}, Training Time: {training_time:.2f}s")
 
-# Save model to outputs folder for Git LFS
-output_path = "../models/linear_model.pkl"
-os.makedirs(os.path.dirname(output_path), exist_ok=True)
-joblib.dump(pipeline, output_path)
-print(f"Model saved to: {output_path}")
+# # Save model to outputs folder for Git LFS
+# output_path = "../models/linear_model.pkl"
+# os.makedirs(os.path.dirname(output_path), exist_ok=True)
+# joblib.dump(pipeline, output_path)
+# print(f"Model saved to: {output_path}")
