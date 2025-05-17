@@ -47,11 +47,11 @@ jobs:
         name: mlflow-logs
         path: MLProject/mlruns/
 
-    - name: Commit and push model file to GitHub using Git LFS
-      run: |
-        git config --global user.email "sintasitinuriah23@gmail.com"
-        git config --global user.name "Sintasitinuriah"
-        git lfs install
-        git lfs track "mlruns/**"
-        git commit -m "Track large files in mlruns with Git LFS" || true
-        git push origin main
+    # - name: Commit and push model file to GitHub using Git LFS
+    #   run: |
+    #     git config --global user.email "sintasitinuriah23@gmail.com"
+    #     git config --global user.name "Sintasitinuriah"
+    #     git lfs install
+    #     git lfs track "mlruns/**"
+    #     git commit -m "Track large files in mlruns with Git LFS" || true
+    #     git push origin main
