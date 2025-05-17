@@ -36,13 +36,13 @@ jobs:
         mlflow run . -P data_path=cleaned_data.csv --env-manager=local
 
     - name: Upload trained model
-      uses: actions//upload-pages-artifact@v3
+      uses: actions/upload-pages-artifact@v3
       with:
         name: trained-model
         path: models/linear_model.pkl
 
     - name: Upload MLflow logs
-      uses: actions//upload-pages-artifact@v3
+      uses: actions/upload-pages-artifact@v3
       with:
         name: mlflow-logs
         path: MLProject/mlruns/
