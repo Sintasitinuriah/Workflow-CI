@@ -35,27 +35,11 @@ jobs:
         cd MLProject
         mlflow run . -P data_path=cleaned_data.csv --env-manager=local
 
-      # ✅ Upload model sebagai artifact
-    - name: Upload trained model
-      uses: actions/upload-artifact@v3
-      with:
-        name: trained-model
-        path: MLProject/outputs/linear_model.pkl  # atau sesuaikan jika lokasi berbeda
-
-    # ✅ Upload folder mlruns sebagai artifact
-    - name: Upload MLflow logs
-      uses: actions/upload-artifact@v3
-      with:
-        name: mlflow-logs
-        path: MLProject/mlruns/
-
-    # - name: Commit and push model file to GitHub using Git LFS
-    #   run: |
-    #     git config --global user.email "sintasitinuriah23@gmail.com"
-    #     git config --global user.name "Sintasitinuriah"
-    #     git lfs install
-    #     git lfs track "mlruns/**"
-    #     git commit -m "Track large files in mlruns with Git LFS" || true
-    #     git push origin main
-    #     git commit -m "Add trained model (via GitHub Actions)" || echo "No changes to commit"
-    #     git push
+    - name: Commit and push model file to GitHub using Git LFS
+      run: |
+        git config --global user.email "sintasitinuriah23@gmail.com"
+        git config --global user.name "Sintasitinuriah"
+        git lfs install
+        git lfs track "mlruns/**"
+        git commit -m "Track large files in mlruns with Git LFS" || true
+        git push origin main
