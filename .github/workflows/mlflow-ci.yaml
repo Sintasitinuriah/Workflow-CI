@@ -22,7 +22,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install mlflow dagshub
+        pip install mlflow dagshub joblib
 
     - name: Export MLflow Environment Variables
       run: |
@@ -34,3 +34,12 @@ jobs:
       run: |
         cd MLProject
         mlflow run . -P data_path=cleaned_data.csv --env-manager=local
+
+    - name: Commit and push model file to GitHub using Git LFS
+      run: |
+        git config --global user.email "sintasitinuriah23@gmail.com""
+        git config --global user.name "Sintasitinuriah"
+        git lfs install
+        git add outputs/linear_model.pkl
+        git commit -m "Add trained model (via GitHub Actions)" || echo "No changes to commit"
+        git push
