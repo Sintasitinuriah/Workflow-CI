@@ -33,15 +33,11 @@ jobs:
     - name: Run MLflow Project
       run: |
         cd MLProject
-        mlflow run . -P data_path=cleaned_data.csv --env-manager=local
+        # mlflow run . -P data_path=cleaned_data.csv --env-manager=local
+        mlflow run . -P data_path=cleaned_data.csv --env-manager=local | tee mlflow_output.log
 
     - name: Get latest MLflow run_id
       run: |
-        cd MLProject
-
-        # Jalankan mlflow run dan simpan output ke log
-        mlflow run . -P data_path=cleaned_data.csv --env-manager=local | tee mlflow_output.log
-
         # Ekstrak RUN_ID dari output yang dicetak oleh modeling.py
         RUN_ID=$(grep 'MLFLOW_RUN_ID=' mlflow_output.log | cut -d'=' -f2)
 
