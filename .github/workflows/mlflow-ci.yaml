@@ -59,7 +59,7 @@ jobs:
         password: ${{ vars.DOCKER_PASSWORD }}
         
     - name: Build Docker image
-      run: docker build -t ${{ vars.DOCKER_USERNAME }}/bigmart-sales:latest MLProject/
+      run: docker build -t sintasitinuriah23/bigmartsales_repository:latest MLProject/
 
-    - name: Push to Docker Hub
-      run: docker push ${{ vars.DOCKER_USERNAME }}/bigmartsales_repository:latest
+    - name: Push Docker image
+      run: docker push sintasitinuriah23/bigmartsales_repository:latest
