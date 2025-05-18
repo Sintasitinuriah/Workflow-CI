@@ -37,9 +37,16 @@ jobs:
 
     - name: Get latest MLflow run_id
       run: |
-        RUN_ID=$(ls -td mlruns/0/*/ | head -n 1 | cut -d'/' -f3)
+        cd MLProject
+
+        # Jalankan mlflow run dan simpan output ke log
+        mlflow run . -P data_path=cleaned_data.csv --env-manager=local | tee mlflow_output.log
+
+        # Ekstrak RUN_ID dari output yang dicetak oleh modeling.py
+        RUN_ID=$(grep 'MLFLOW_RUN_ID=' mlflow_output.log | cut -d'=' -f2)
+
         echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
-        echo "Latest run_id: $RUN_ID"
+        echo "Latest run_id: $RUN_ID""
 
     - name: Upload trained model
       uses: actions/upload-artifact@v4
