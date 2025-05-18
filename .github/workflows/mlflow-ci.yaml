@@ -35,6 +35,12 @@ jobs:
         cd MLProject
         mlflow run . -P data_path=cleaned_data.csv --env-manager=local
 
+    - name: Get latest MLflow run_id
+      run: |
+        RUN_ID=$(ls -td mlruns/0/*/ | head -n 1 | cut -d'/' -f3)
+        echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
+        echo "Latest run_id: $RUN_ID"
+
     - name: Upload trained model
       uses: actions/upload-artifact@v4
       with:
@@ -47,10 +53,9 @@ jobs:
         name: mlflow-logs
         path: MLProject/mlruns/
 
-    - name: Debug vars (Hanya untuk Pengujian)
+    - name: Build Docker Model
       run: |
-        echo "DOCKER_USERNAME: ${{ vars.DOCKER_USERNAME }}"
-        echo "DOCKER_PASSWORD: ${{ vars.DOCKER_PASSWORD }}"
+        mlflow models build-docker --model-uri "runs:/$RUN_ID/model" --name "cc" 
 
     - name: Log in to Docker Hub
       uses: docker/login-action@v2

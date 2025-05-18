@@ -22,8 +22,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--data_path", type=str, required=True)
 args = parser.parse_args()
 
-# 🚫 JANGAN pakai mlflow.set_experiment() kalau pakai `mlflow run`
-# mlflow.set_experiment("Big Mart Sales Prediction")  <-- HAPUS
+mlflow.set_tracking_uri("https://dagshub.com/Sintasitinuriah/my-first-repo.mlflow")
 
 # Load dataset
 data = pd.read_csv(args.data_path)
