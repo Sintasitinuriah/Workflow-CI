@@ -35,21 +35,11 @@ jobs:
         cd MLProject
         mlflow run . -P data_path=cleaned_data.csv --env-manager=local
 
-    - name: Get latest run_id from MLflow remote (DagsHub)
+    - name: Get latest MLflow run_id
       run: |
-        python - <<EOF
-        import mlflow
-        client = mlflow.tracking.MlflowClient()
-        runs = client.search_runs(experiment_ids=["0"], order_by=["start_time DESC"], max_results=1)
-        if runs:
-            run_id = runs[0].info.run_id
-            print(f"RUN_ID={run_id}")
-            with open(os.environ["GITHUB_ENV"], "a") as f:
-                f.write(f"RUN_ID={run_id}\n")
-        else:
-            print("No run found")
-            exit(1)
-        EOF
+        RUN_ID=$(ls -td mlruns/0/*/ | head -n 1 | cut -d'/' -f3)
+        echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
+        echo "Latest run_id: $RUN_ID"
 
     - name: Upload trained model
       uses: actions/upload-artifact@v4
