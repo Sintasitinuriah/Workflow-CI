@@ -38,7 +38,6 @@ jobs:
 
     - name: Get latest MLflow run_id
       run: |
-        # Ekstrak RUN_ID dari output yang dicetak oleh modeling.py
         RUN_ID=$(grep 'MLFLOW_RUN_ID=' mlflow_output.log | cut -d'=' -f2)
 
         echo "RUN_ID=$RUN_ID" >> $GITHUB_ENV
